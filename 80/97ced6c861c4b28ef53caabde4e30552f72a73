@@ -1,0 +1,78 @@
+services/dashboard/vite.config.ts
+  s_cf57004e232fdf::t_d10f5d9a4cef3e 29
+services/status-page/src/lib/db.ts
+  s_cf57004e232fdf::t_d10f5d9a4cef3e 6,8-31
+services/dashboard/src/lib/blob.ts
+  s_cf57004e232fdf::t_d10f5d9a4cef3e 18-25,34-35,37,61-62,64-66,68-72,75,88-96,99
+  s_cf57004e232fdf::t_64627454090417 2,26-32,63,87
+services/incidentd/src/adapters/slack/receiver/routes.ts
+  s_cf57004e232fdf::t_d10f5d9a4cef3e 71,269,507
+services/dashboard/src/lib/auth/auth.ts
+  s_cf57004e232fdf::t_d10f5d9a4cef3e 5,163,168
+services/dashboard/src/lib/incident-affections/incident-affections.ts
+  s_cf57004e232fdf::t_d10f5d9a4cef3e 7,69,210-211,241-242
+services/dashboard/wrangler.toml
+  s_cf57004e232fdf::t_209af28662b607 1-5,9-14,16-19
+  s_cf57004e232fdf::t_97ecdc02c9e5d2 6,8
+services/incidentd/src/adapters/dashboard/receiver/middleware.ts
+  s_cf57004e232fdf::t_d10f5d9a4cef3e 5-6,8-9,12
+services/dashboard/package.json
+  s_cf57004e232fdf::t_d10f5d9a4cef3e 7
+services/dashboard/src/lib/db.ts
+  s_cf57004e232fdf::t_8e099cd968756c 5,9,12-25,27-41,48
+  s_cf57004e232fdf::t_a3a85cf83c59c1 7
+  s_cf57004e232fdf::t_d10f5d9a4cef3e 3,10-11,26,42-47
+services/status-page/open-next.config.ts
+  s_cf57004e232fdf::t_857159b5d2e935 1-3
+services/dashboard/server/middleware/cf-context.ts
+  s_cf57004e232fdf::t_c2264166ebbd37 4,7
+  s_cf57004e232fdf::t_3166153b8d1c03 1-3,5-6,8-10
+services/dashboard/src/lib/utils/server.ts
+  s_cf57004e232fdf::t_671f5ca35395ea 2,31-35
+  s_cf57004e232fdf::t_d10f5d9a4cef3e 4-8,18,20-28,38,42,50
+services/incidentd/src/handler/index.ts
+  s_cf57004e232fdf::t_d10f5d9a4cef3e 6
+services/incidentd/src/adapters/slack/receiver/utils.ts
+  s_cf57004e232fdf::t_d10f5d9a4cef3e 167,705,711,719
+services/status-page/wrangler.toml
+  s_cf57004e232fdf::t_251ee8a0724c97 1-7
+DEPLOYMENT_PLAN.md
+  s_cf57004e232fdf::t_80666cc9adc09c 5,9-21,169-170,172,174,177-178,180,184,191,233-236,239,259,287-291,294-295,301,303,306-308,311-312,315,320,332,351,357,359,361,365,368,372,374,376-377,379,381,392,403,405-407,409-413,416,418,420,422-429,431-432,434,436,442-447,452,487-489,492,494-496,498-503,505-506,510-511
+  s_cf57004e232fdf::t_c9fae2f9bcc80e 22-137
+  s_a1ba5da9b2ad7f::t_bf2b84f5762a9b 1-4,6-8,138-168,171,173,175-176,179,181-183,185-190,192-232,237-238,240-258,260-286,292-293,296-300,302,304-305,309-310,313-314,316-319,321-331,333-350,352-356,358,360,362-364,366-367,369-371,373,375,378,380,382-391,393-402,404,408,414-415,417,419,421,430,433,435,437-441,448-451,453-486,490-491,493,497,504,507-509,512-519
+services/incidentd/worker-configuration.d.ts
+  s_cf57004e232fdf::t_d10f5d9a4cef3e 17,35
+services/status-page/package.json
+  s_cf57004e232fdf::t_d10f5d9a4cef3e 7-8,12,23
+services/dashboard/src/lib/status-pages/status-pages.ts
+  s_cf57004e232fdf::t_d10f5d9a4cef3e 478-479
+services/dashboard/src/lib/incidents/incidents.ts
+  s_cf57004e232fdf::t_d10f5d9a4cef3e 10,17,34,99-100,117-118,135-136,188-189,315-316
+services/dashboard/src/lib/cf-context.ts
+  s_cf57004e232fdf::t_b7b91dbc93dd69 6,15
+  s_cf57004e232fdf::t_9a3d0552aa4bae 1-5,7-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.1",
+  "base_commit_sha": "8097ced6c861c4b28ef53caabde4e30552f72a73",
+  "prompts": {},
+  "sessions": {
+    "s_a1ba5da9b2ad7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "75a59cdc-7903-4cbf-90b7-91f505fb3ed8",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Oriol <oriol.castro@genesy.ai>"
+    },
+    "s_cf57004e232fdf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "133e9743-e44f-450c-a3fa-9c4932e6405b",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Oriol <oriol.castro@genesy.ai>"
+    }
+  }
+}
