@@ -90,6 +90,7 @@
 	],
 	"vars": {
 		"FRONTEND_URL": "https://app.firedash.ai",
+		"CLIENT_ID": "enginy",
 	},
 	/**
 	 * Smart Placement

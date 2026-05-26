@@ -3,7 +3,7 @@ import type { Context } from "hono";
 import { getIncidentIdByIdentifiers } from "../lib/incident-identifiers";
 
 export type BasicContext = { Bindings: Env };
-export type AuthContext = BasicContext & { Variables: { auth: { clientId: string } } };
+export type AuthContext = BasicContext & { Variables: { auth: { clientId: string; userId: string } } };
 export type Metadata = Record<string, string> & { clientId: string; identifier: string };
 type BootstrapMessage = { message: string; userId: string; messageId: string; createdAt: string };
 type IncidentIdOrIdentifier = { id: string } | { identifier: string; clientId: string };

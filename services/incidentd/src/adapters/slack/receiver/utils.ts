@@ -164,6 +164,7 @@ export async function handleStatusUpdate<E extends BasicContext>(
 
 	const slackIntegration = await getSlackIntegration({
 		hyperdrive: c.env.db,
+		clientId: c.env.CLIENT_ID,
 		teamId,
 		enterpriseId,
 		isEnterpriseInstall: !!enterpriseId,
@@ -701,12 +702,13 @@ export function buildThreadIncidentPrompt({
  */
 export async function getSlackIntegration(opts: {
 	hyperdrive: Hyperdrive;
+	clientId: string;
 	teamId: string;
 	enterpriseId?: string | null;
 	isEnterpriseInstall?: boolean;
 	withEntryPoints?: boolean;
 }): Promise<{ clientId: string; data: SlackIntegrationData; entryPoints: EntryPoint[]; services: { id: string; name: string; prompt: string | null }[] } | null> {
-	const { hyperdrive, teamId, enterpriseId, isEnterpriseInstall = false } = opts;
+	const { hyperdrive } = opts;
 	const db = getDB(hyperdrive);
 
 	const result = await db.query.client.findFirst({
@@ -714,17 +716,7 @@ export async function getSlackIntegration(opts: {
 			id: true,
 		},
 		where: {
-			RAW: (table) => sql`
-				EXISTS (
-					SELECT 1 FROM integration WHERE client_id = ${table.id}
-					AND platform = 'slack'
-					AND data->>'teamId' = ${teamId}
-					AND (
-						${!isEnterpriseInstall}
-						OR data->>'enterpriseId' = ${enterpriseId}
-					)
-				)
-				`,
+			id: opts.clientId,
 		},
 		with: {
 			integrations: {

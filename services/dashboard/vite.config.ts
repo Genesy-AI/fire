@@ -26,13 +26,6 @@ export default defineConfig({
 			},
 		}),
 		solidPlugin({ ssr: true }),
-		nitro({
-			preset: "vercel",
-			vercel: {
-				functions: {
-					runtime: "bun1.x",
-				},
-			},
-		}),
+		nitro({ preset: "cloudflare_pages" }),
 	],
 });

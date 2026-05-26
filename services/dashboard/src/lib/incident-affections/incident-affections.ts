@@ -4,7 +4,7 @@ import { and, desc, eq, inArray, isNotNull } from "drizzle-orm";
 import { authMiddleware } from "../auth/auth-middleware";
 import { requirePermission } from "../auth/authorization";
 import { db } from "../db";
-import { signedFetch } from "../utils/server";
+import { incidentdFetch } from "../utils/server";
 
 const AFFECTION_STATUS_ORDER = ["investigating", "mitigating", "resolved"] as const;
 
@@ -66,7 +66,7 @@ function normalizeServices(services: { id: string; impact: AffectionImpact }[]) 
 }
 
 async function assertIncidentAccess(incidentId: string, context: { clientId: string; userId: string }) {
-	const response = await signedFetch(`${process.env.INCIDENTS_URL}/${incidentId}`, { clientId: context.clientId, userId: context.userId });
+	const response = await incidentdFetch(`/${incidentId}`, { clientId: context.clientId, userId: context.userId });
 	if (!response.ok) {
 		throw new Error("Incident not found");
 	}
@@ -207,8 +207,8 @@ export const createIncidentAffection = createServerFn({ method: "POST" })
 			throw new Error("One or more services not found");
 		}
 
-		const response = await signedFetch(
-			`${process.env.INCIDENTS_URL}/${data.incidentId}/affection`,
+		const response = await incidentdFetch(
+			`/${data.incidentId}/affection`,
 			{ clientId: context.clientId, userId: context.userId },
 			{
 				method: "POST",
@@ -238,8 +238,8 @@ export const addIncidentAffectionUpdate = createServerFn({ method: "POST" })
 			throw new Error("Update message is required");
 		}
 
-		const response = await signedFetch(
-			`${process.env.INCIDENTS_URL}/${data.incidentId}/affection/update`,
+		const response = await incidentdFetch(
+			`/${data.incidentId}/affection/update`,
 			{ clientId: context.clientId, userId: context.userId },
 			{
 				method: "POST",

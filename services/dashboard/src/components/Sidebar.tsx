@@ -5,7 +5,6 @@ import {
 	BookOpen,
 	Building2,
 	ChevronDown,
-	CreditCard,
 	Flame,
 	Key,
 	LogOut,
@@ -65,7 +64,6 @@ const settingsNavItems: SettingsNavItemType[] = [
 	{ label: "API Keys", to: "/settings/account/api-keys", section: "account", icon: Key },
 	{ label: "Integrations", to: "/settings/workspace/integrations", section: "workspace", icon: Plug },
 	{ label: "User Management", to: "/settings/workspace/users", section: "workspace", icon: Users },
-	{ label: "Billing", to: "/settings/workspace/billing", section: "workspace", icon: CreditCard },
 ];
 
 function createStoredBoolean(key: string, defaultValue: boolean) {

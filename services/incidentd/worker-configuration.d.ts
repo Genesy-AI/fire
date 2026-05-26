@@ -14,7 +14,7 @@ declare namespace Cloudflare {
 		SLACK_SIGNING_SECRET: string;
 		DATABASE_URL: string;
 		OPENAI_API_KEY: string;
-		WORKER_SIGNING_SECRET: string;
+		CLIENT_ID: string;
 		GITHUB_APP_ID: string;
 		GITHUB_APP_PRIVATE_KEY: string;
 		INCIDENT: DurableObjectNamespace<import("./src/index").Incident>;
@@ -32,7 +32,7 @@ type StringifyValues<EnvType extends Record<string, unknown>> = {
 	[Binding in keyof EnvType]: EnvType[Binding] extends string ? EnvType[Binding] : string;
 };
 declare namespace NodeJS {
-	interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, "FRONTEND_URL" | "SLACK_SIGNING_SECRET" | "DATABASE_URL" | "OPENAI_API_KEY" | "WORKER_SIGNING_SECRET" | "GITHUB_APP_ID" | "GITHUB_APP_PRIVATE_KEY">> {}
+	interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, "FRONTEND_URL" | "SLACK_SIGNING_SECRET" | "DATABASE_URL" | "OPENAI_API_KEY" | "CLIENT_ID" | "GITHUB_APP_ID" | "GITHUB_APP_PRIVATE_KEY">> {}
 }
 
 // Begin runtime types

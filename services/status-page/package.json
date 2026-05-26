@@ -4,11 +4,12 @@
 	"type": "module",
 	"scripts": {
 		"dev": "next dev --port 3001",
-		"build": "next build",
+		"build": "opennextjs-cloudflare build",
+		"preview": "opennextjs-cloudflare preview",
 		"start": "next start",
 		"type-check": "tsc --noEmit",
 		"lint": "echo 'Lint runs from root'",
-		"clean": "rm -rf .next node_modules"
+		"clean": "rm -rf .next .open-next node_modules"
 	},
 	"dependencies": {
 		"@fire/db": "workspace:*",
@@ -19,6 +20,7 @@
 		"react-dom": "^19.1.0"
 	},
 	"devDependencies": {
+		"@opennextjs/cloudflare": "^1.x",
 		"@types/node": "^22.15.3",
 		"@types/pg": "catalog:",
 		"@types/react": "^19.1.6",

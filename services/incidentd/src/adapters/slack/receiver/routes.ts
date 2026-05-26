@@ -68,6 +68,7 @@ slackRoutes.post("/events", async (c) => {
 
 				const slackIntegration = await getSlackIntegration({
 					hyperdrive: c.env.db,
+					clientId: c.env.CLIENT_ID,
 					teamId,
 					enterpriseId,
 					isEnterpriseInstall,
@@ -265,6 +266,7 @@ slackRoutes.post("/events", async (c) => {
 
 				const slackIntegration = await getSlackIntegration({
 					hyperdrive: c.env.db,
+					clientId: c.env.CLIENT_ID,
 					teamId,
 					enterpriseId,
 					isEnterpriseInstall,
@@ -502,6 +504,7 @@ slackRoutes.post("/interaction", async (c) => {
 						const suggestionBlocks = payload.message?.blocks;
 						const slackIntegration = await getSlackIntegration({
 							hyperdrive: c.env.db,
+							clientId: c.env.CLIENT_ID,
 							teamId,
 							enterpriseId,
 							isEnterpriseInstall: !!enterpriseId,

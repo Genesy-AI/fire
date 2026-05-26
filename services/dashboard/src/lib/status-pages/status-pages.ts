@@ -5,7 +5,6 @@ import { and, eq, inArray } from "drizzle-orm";
 import { authMiddleware } from "../auth/auth-middleware";
 import { requirePermission } from "../auth/authorization";
 import { db } from "../db";
-import { addDomainToVercel, getDomainConfig, removeDomainFromVercel } from "../vercel/vercel-domains";
 import { isApexDomain, isValidDomain, normalizeDomain } from "./status-pages.utils";
 
 type StatusPageRow = InferSelectModel<typeof statusPage>;
@@ -309,25 +308,6 @@ export const updateStatusPage = createServerFn({ method: "POST" })
 				}
 			}
 
-			const currentPage = await db.query.statusPage.findFirst({
-				where: {
-					id: data.id,
-					clientId: context.clientId,
-				},
-				columns: {
-					customDomain: true,
-				},
-			});
-			const currentDomain = normalizeDomain(currentPage?.customDomain);
-
-			if (currentDomain && currentDomain !== normalizedDomain) {
-				await removeDomainFromVercel(currentDomain);
-			}
-
-			if (normalizedDomain && normalizedDomain !== currentDomain) {
-				await addDomainToVercel(normalizedDomain);
-			}
-
 			updateFields.customDomain = normalizedDomain;
 		}
 		if (data.siteUrl !== undefined) {
@@ -493,10 +473,9 @@ export const verifyCustomDomain = createServerFn({ method: "POST" })
 			throw new Error("No custom domain configured");
 		}
 
-		const config = await getDomainConfig(domain);
 		return {
 			domain,
-			verified: config.verified,
-			misconfigured: config.misconfigured,
+			verified: false,
+			misconfigured: true,
 		};
 	});

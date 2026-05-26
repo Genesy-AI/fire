@@ -18,7 +18,6 @@ import { getRotationScheduleWakeToken, type RotationScheduleWakeAction, rotation
 import { authMiddleware } from "../auth/auth-middleware";
 import { assertRolePermission, isWorkspaceCatalogWriter, requirePermission } from "../auth/authorization";
 import { assertTeamAdminOrWorkspaceCatalogWriter } from "../auth/authorization.server";
-import { queueBillingSeatSync } from "../billing/billing.server";
 import { uploadImageFromUrl } from "../blob";
 import { db } from "../db";
 import { createUserFacingError } from "../errors/user-facing-error";
@@ -263,7 +262,6 @@ export const deleteRotation = createServerFn({ method: "POST" })
 		}
 
 		await notifyRotationScheduleWorkflow(data.id, { deleted: true });
-		queueBillingSeatSync(context.clientId);
 
 		return { success: true };
 	});
@@ -510,7 +508,6 @@ export const addRotationAssignee = createServerFn({ method: "POST" })
 		await db.execute(getAddAssigneeSQL(data.rotationId, data.assigneeId));
 
 		await notifyRotationScheduleWorkflow(data.rotationId, { action: "add_assignee" });
-		queueBillingSeatSync(context.clientId);
 
 		return { success: true };
 	});
@@ -584,7 +581,6 @@ export const addSlackUserAsRotationAssignee = createServerFn({ method: "POST" })
 		});
 
 		await notifyRotationScheduleWorkflow(data.rotationId, { action: "add_assignee" });
-		queueBillingSeatSync(context.clientId);
 
 		return { success: true, userId };
 	});
@@ -617,7 +613,6 @@ export const removeRotationAssignee = createServerFn({ method: "POST" })
 		});
 
 		await notifyRotationScheduleWorkflow(data.rotationId, { action: "remove_assignee" });
-		queueBillingSeatSync(context.clientId);
 
 		return { success: true };
 	});
