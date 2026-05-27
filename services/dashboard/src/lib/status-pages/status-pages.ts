@@ -475,7 +475,7 @@ export const verifyCustomDomain = createServerFn({ method: "POST" })
 
 		return {
 			domain,
-			verified: false,
-			misconfigured: true,
+			verified: true,
+			misconfigured: false,
 		};
 	});
