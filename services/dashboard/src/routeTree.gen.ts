@@ -26,7 +26,6 @@ import { Route as NotionOauthCallbackRouteImport } from './routes/notion/oauth/c
 import { Route as IntercomOauthCallbackRouteImport } from './routes/intercom/oauth/callback'
 import { Route as GithubOauthCallbackRouteImport } from './routes/github/oauth/callback'
 import { Route as ApiRotationsStartWorkflowRouteImport } from './routes/api/rotations/start-workflow'
-import { Route as ApiBillingWebhookRouteImport } from './routes/api/billing/webhook'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AuthedTeamsTeamIdRouteImport } from './routes/_authed.teams/$teamId'
 import { Route as AuthedStatusPageStatusPageIdRouteImport } from './routes/_authed.status-page/$statusPageId'
@@ -46,7 +45,6 @@ import { Route as AuthedTeamsTeamIdEntryPointsRouteImport } from './routes/_auth
 import { Route as AuthedSettingsWorkspaceUsersRouteImport } from './routes/_authed.settings.workspace.users'
 import { Route as AuthedSettingsWorkspaceProfileRouteImport } from './routes/_authed.settings.workspace.profile'
 import { Route as AuthedSettingsWorkspaceIntegrationsRouteImport } from './routes/_authed.settings.workspace.integrations'
-import { Route as AuthedSettingsWorkspaceBillingRouteImport } from './routes/_authed.settings.workspace.billing'
 import { Route as AuthedSettingsAccountProfileRouteImport } from './routes/_authed.settings.account.profile'
 import { Route as AuthedSettingsAccountIntegrationsRouteImport } from './routes/_authed.settings.account.integrations'
 import { Route as AuthedSettingsAccountApiKeysRouteImport } from './routes/_authed.settings.account.api-keys'
@@ -136,11 +134,6 @@ const ApiRotationsStartWorkflowRoute =
     path: '/api/rotations/start-workflow',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiBillingWebhookRoute = ApiBillingWebhookRouteImport.update({
-  id: '/api/billing/webhook',
-  path: '/api/billing/webhook',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -247,12 +240,6 @@ const AuthedSettingsWorkspaceIntegrationsRoute =
     path: '/workspace/integrations',
     getParentRoute: () => AuthedSettingsRoute,
   } as any)
-const AuthedSettingsWorkspaceBillingRoute =
-  AuthedSettingsWorkspaceBillingRouteImport.update({
-    id: '/workspace/billing',
-    path: '/workspace/billing',
-    getParentRoute: () => AuthedSettingsRoute,
-  } as any)
 const AuthedSettingsAccountProfileRoute =
   AuthedSettingsAccountProfileRouteImport.update({
     id: '/account/profile',
@@ -294,7 +281,6 @@ export interface FileRoutesByFullPath {
   '/status-page/$statusPageId': typeof AuthedStatusPageStatusPageIdRoute
   '/teams/$teamId': typeof AuthedTeamsTeamIdRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/api/billing/webhook': typeof ApiBillingWebhookRoute
   '/api/rotations/start-workflow': typeof ApiRotationsStartWorkflowRoute
   '/github/oauth/callback': typeof GithubOauthCallbackRoute
   '/intercom/oauth/callback': typeof IntercomOauthCallbackRoute
@@ -305,7 +291,6 @@ export interface FileRoutesByFullPath {
   '/settings/account/api-keys': typeof AuthedSettingsAccountApiKeysRoute
   '/settings/account/integrations': typeof AuthedSettingsAccountIntegrationsRoute
   '/settings/account/profile': typeof AuthedSettingsAccountProfileRoute
-  '/settings/workspace/billing': typeof AuthedSettingsWorkspaceBillingRoute
   '/settings/workspace/integrations': typeof AuthedSettingsWorkspaceIntegrationsRoute
   '/settings/workspace/profile': typeof AuthedSettingsWorkspaceProfileRoute
   '/settings/workspace/users': typeof AuthedSettingsWorkspaceUsersRoute
@@ -336,7 +321,6 @@ export interface FileRoutesByTo {
   '/status-page/$statusPageId': typeof AuthedStatusPageStatusPageIdRoute
   '/teams/$teamId': typeof AuthedTeamsTeamIdRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/api/billing/webhook': typeof ApiBillingWebhookRoute
   '/api/rotations/start-workflow': typeof ApiRotationsStartWorkflowRoute
   '/github/oauth/callback': typeof GithubOauthCallbackRoute
   '/intercom/oauth/callback': typeof IntercomOauthCallbackRoute
@@ -347,7 +331,6 @@ export interface FileRoutesByTo {
   '/settings/account/api-keys': typeof AuthedSettingsAccountApiKeysRoute
   '/settings/account/integrations': typeof AuthedSettingsAccountIntegrationsRoute
   '/settings/account/profile': typeof AuthedSettingsAccountProfileRoute
-  '/settings/workspace/billing': typeof AuthedSettingsWorkspaceBillingRoute
   '/settings/workspace/integrations': typeof AuthedSettingsWorkspaceIntegrationsRoute
   '/settings/workspace/profile': typeof AuthedSettingsWorkspaceProfileRoute
   '/settings/workspace/users': typeof AuthedSettingsWorkspaceUsersRoute
@@ -380,7 +363,6 @@ export interface FileRoutesById {
   '/_authed/status-page/$statusPageId': typeof AuthedStatusPageStatusPageIdRoute
   '/_authed/teams/$teamId': typeof AuthedTeamsTeamIdRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/api/billing/webhook': typeof ApiBillingWebhookRoute
   '/api/rotations/start-workflow': typeof ApiRotationsStartWorkflowRoute
   '/github/oauth/callback': typeof GithubOauthCallbackRoute
   '/intercom/oauth/callback': typeof IntercomOauthCallbackRoute
@@ -391,7 +373,6 @@ export interface FileRoutesById {
   '/_authed/settings/account/api-keys': typeof AuthedSettingsAccountApiKeysRoute
   '/_authed/settings/account/integrations': typeof AuthedSettingsAccountIntegrationsRoute
   '/_authed/settings/account/profile': typeof AuthedSettingsAccountProfileRoute
-  '/_authed/settings/workspace/billing': typeof AuthedSettingsWorkspaceBillingRoute
   '/_authed/settings/workspace/integrations': typeof AuthedSettingsWorkspaceIntegrationsRoute
   '/_authed/settings/workspace/profile': typeof AuthedSettingsWorkspaceProfileRoute
   '/_authed/settings/workspace/users': typeof AuthedSettingsWorkspaceUsersRoute
@@ -424,7 +405,6 @@ export interface FileRouteTypes {
     | '/status-page/$statusPageId'
     | '/teams/$teamId'
     | '/api/auth/$'
-    | '/api/billing/webhook'
     | '/api/rotations/start-workflow'
     | '/github/oauth/callback'
     | '/intercom/oauth/callback'
@@ -435,7 +415,6 @@ export interface FileRouteTypes {
     | '/settings/account/api-keys'
     | '/settings/account/integrations'
     | '/settings/account/profile'
-    | '/settings/workspace/billing'
     | '/settings/workspace/integrations'
     | '/settings/workspace/profile'
     | '/settings/workspace/users'
@@ -466,7 +445,6 @@ export interface FileRouteTypes {
     | '/status-page/$statusPageId'
     | '/teams/$teamId'
     | '/api/auth/$'
-    | '/api/billing/webhook'
     | '/api/rotations/start-workflow'
     | '/github/oauth/callback'
     | '/intercom/oauth/callback'
@@ -477,7 +455,6 @@ export interface FileRouteTypes {
     | '/settings/account/api-keys'
     | '/settings/account/integrations'
     | '/settings/account/profile'
-    | '/settings/workspace/billing'
     | '/settings/workspace/integrations'
     | '/settings/workspace/profile'
     | '/settings/workspace/users'
@@ -509,7 +486,6 @@ export interface FileRouteTypes {
     | '/_authed/status-page/$statusPageId'
     | '/_authed/teams/$teamId'
     | '/api/auth/$'
-    | '/api/billing/webhook'
     | '/api/rotations/start-workflow'
     | '/github/oauth/callback'
     | '/intercom/oauth/callback'
@@ -520,7 +496,6 @@ export interface FileRouteTypes {
     | '/_authed/settings/account/api-keys'
     | '/_authed/settings/account/integrations'
     | '/_authed/settings/account/profile'
-    | '/_authed/settings/workspace/billing'
     | '/_authed/settings/workspace/integrations'
     | '/_authed/settings/workspace/profile'
     | '/_authed/settings/workspace/users'
@@ -537,7 +512,6 @@ export interface RootRouteChildren {
   ApiUploadRoute: typeof ApiUploadRoute
   AuthErrorRoute: typeof AuthErrorRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
-  ApiBillingWebhookRoute: typeof ApiBillingWebhookRoute
   ApiRotationsStartWorkflowRoute: typeof ApiRotationsStartWorkflowRoute
   GithubOauthCallbackRoute: typeof GithubOauthCallbackRoute
   IntercomOauthCallbackRoute: typeof IntercomOauthCallbackRoute
@@ -665,13 +639,6 @@ declare module '@tanstack/solid-router' {
       path: '/api/rotations/start-workflow'
       fullPath: '/api/rotations/start-workflow'
       preLoaderRoute: typeof ApiRotationsStartWorkflowRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/billing/webhook': {
-      id: '/api/billing/webhook'
-      path: '/api/billing/webhook'
-      fullPath: '/api/billing/webhook'
-      preLoaderRoute: typeof ApiBillingWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
@@ -807,13 +774,6 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof AuthedSettingsWorkspaceIntegrationsRouteImport
       parentRoute: typeof AuthedSettingsRoute
     }
-    '/_authed/settings/workspace/billing': {
-      id: '/_authed/settings/workspace/billing'
-      path: '/workspace/billing'
-      fullPath: '/settings/workspace/billing'
-      preLoaderRoute: typeof AuthedSettingsWorkspaceBillingRouteImport
-      parentRoute: typeof AuthedSettingsRoute
-    }
     '/_authed/settings/account/profile': {
       id: '/_authed/settings/account/profile'
       path: '/account/profile'
@@ -862,7 +822,6 @@ interface AuthedSettingsRouteChildren {
   AuthedSettingsAccountApiKeysRoute: typeof AuthedSettingsAccountApiKeysRoute
   AuthedSettingsAccountIntegrationsRoute: typeof AuthedSettingsAccountIntegrationsRoute
   AuthedSettingsAccountProfileRoute: typeof AuthedSettingsAccountProfileRoute
-  AuthedSettingsWorkspaceBillingRoute: typeof AuthedSettingsWorkspaceBillingRoute
   AuthedSettingsWorkspaceIntegrationsRoute: typeof AuthedSettingsWorkspaceIntegrationsRoute
   AuthedSettingsWorkspaceProfileRoute: typeof AuthedSettingsWorkspaceProfileRoute
   AuthedSettingsWorkspaceUsersRoute: typeof AuthedSettingsWorkspaceUsersRoute
@@ -873,7 +832,6 @@ const AuthedSettingsRouteChildren: AuthedSettingsRouteChildren = {
   AuthedSettingsAccountIntegrationsRoute:
     AuthedSettingsAccountIntegrationsRoute,
   AuthedSettingsAccountProfileRoute: AuthedSettingsAccountProfileRoute,
-  AuthedSettingsWorkspaceBillingRoute: AuthedSettingsWorkspaceBillingRoute,
   AuthedSettingsWorkspaceIntegrationsRoute:
     AuthedSettingsWorkspaceIntegrationsRoute,
   AuthedSettingsWorkspaceProfileRoute: AuthedSettingsWorkspaceProfileRoute,
@@ -941,7 +899,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiUploadRoute: ApiUploadRoute,
   AuthErrorRoute: AuthErrorRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
-  ApiBillingWebhookRoute: ApiBillingWebhookRoute,
   ApiRotationsStartWorkflowRoute: ApiRotationsStartWorkflowRoute,
   GithubOauthCallbackRoute: GithubOauthCallbackRoute,
   IntercomOauthCallbackRoute: IntercomOauthCallbackRoute,

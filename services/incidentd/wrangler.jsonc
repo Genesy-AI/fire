@@ -6,7 +6,7 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "incidentd",
 	"main": "src/index.ts",
-	"compatibility_date": "2025-12-19",
+	"compatibility_date": "2026-05-27",
 	"migrations": [
 		{
 			"new_sqlite_classes": ["Incident"],
@@ -60,20 +60,24 @@
 		},
 	],
 	"observability": {
-		"enabled": true,
+		"enabled": false,
+		"logs": {
+			"enabled": false,
+		},
 	},
 	"compatibility_flags": ["nodejs_compat"],
 	"hyperdrive": [
 		{
 			"binding": "db",
-			"id": "985eb1686096409e90e6a42bb600a07e",
+			"id": "ab77c35dd8ff4bcd85f01f55b76a9bed",
 			"localConnectionString": "postgresql://postgres:postgres@localhost:5432/fire",
 		},
 	],
 	"d1_databases": [
 		{
 			"binding": "incidents",
-			"database_id": "9247b91c-2e42-4c61-af27-6ad3c77ada50",
+			"database_name": "incidents",
+			"database_id": "241ded2b-ecba-4263-9bdd-a65e06cd06df",
 		},
 	],
 	"services": [
@@ -89,9 +93,11 @@
 		},
 	],
 	"vars": {
-		"FRONTEND_URL": "https://app.firedash.ai",
+		"FRONTEND_URL": "https://firedash.enginy.ai",
 		"CLIENT_ID": "enginy",
 	},
+	"workers_dev": false,
+	"preview_urls": false,
 	/**
 	 * Smart Placement
 	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement

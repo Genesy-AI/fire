@@ -50,13 +50,14 @@ Shared Drizzle schema package (`@fire/db`) used across services.
 ## Getting Started
 
 ```bash
-bun install
-bun run dev
+pnpm install
+
+pnpm run dev
 
 # Run services individually
-bun run dev:dashboard
-bun run dev:incidentd
-bun run dev:status-page
+pnpm run dev:dashboard
+pnpm run dev:incidentd
+pnpm run dev:status-page
 ```
 
 ## Environment

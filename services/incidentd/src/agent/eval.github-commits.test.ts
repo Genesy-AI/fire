@@ -7,10 +7,10 @@
  * - it executes a multi-step tool loop against mocked GitHub data
  *
  * Usage:
- *   OPENAI_API_KEY=... bun services/incidentd/src/agent/eval.github-commits.test.ts
- *   OPENAI_API_KEY=... bun services/incidentd/src/agent/eval.github-commits.test.ts --section=agent-loop --runs=3
- *   OPENAI_API_KEY=... bun services/incidentd/src/agent/eval.github-commits.test.ts --section=prompt-answer --runs=3
- *   OPENAI_API_KEY=... bun services/incidentd/src/agent/eval.github-commits.test.ts --out=/tmp/github-eval.json
+ *   OPENAI_API_KEY=... npx tsx services/incidentd/src/agent/eval.github-commits.test.ts
+ *   OPENAI_API_KEY=... npx tsx services/incidentd/src/agent/eval.github-commits.test.ts --section=agent-loop --runs=3
+ *   OPENAI_API_KEY=... npx tsx services/incidentd/src/agent/eval.github-commits.test.ts --section=prompt-answer --runs=3
+ *   OPENAI_API_KEY=... npx tsx services/incidentd/src/agent/eval.github-commits.test.ts --out=/tmp/github-eval.json
  */
 
 import { mkdir, writeFile } from "node:fs/promises";
