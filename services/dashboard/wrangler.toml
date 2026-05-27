@@ -1,0 +1,19 @@
+name = "dashboard"
+compatibility_date = "2025-12-19"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".output/public"
+
+[vars]
+CLIENT_ID = "enginy"
+
+[[services]]
+binding = "INCIDENTD"
+service = "incidentd"
+
+[[hyperdrive]]
+binding = "DB"
+id = "ab77c35dd8ff4bcd85f01f55b76a9bed"
+
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "fire-images"

@@ -2,7 +2,7 @@ import type { SlackIntegrationData } from "@fire/db/schema";
 import { client, integration, userRole, user as userTable } from "@fire/db/schema";
 import { APIError, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { and, arrayContains, count, eq } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 import { uploadImageFromUrl } from "~/lib/blob";
 import { db } from "~/lib/db";
 import { lookupSlackUserIdByEmail } from "../slack";
@@ -160,12 +160,12 @@ export const auth = betterAuth({
 					const [foundClient] = await db
 						.select()
 						.from(client)
-						.where(arrayContains(client.domains, [domain]))
+						.where(eq(client.id, process.env.CLIENT_ID!))
 						.limit(1);
 
 					if (!foundClient) {
 						throw new APIError("UNPROCESSABLE_ENTITY", {
-							message: "This email domain is not allowed.",
+							message: "CLIENT_ID is not configured correctly.",
 						});
 					}
 

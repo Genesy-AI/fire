@@ -1,4 +1,11 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { getCfEnv } from "~/lib/cf-context";
+
+export function mustGetEnv(name: string): string {
+	const v = process.env[name];
+	if (!v) throw new Error(`Missing env var: ${name}`);
+	return v;
+}
 
 export async function sha256(str: string): Promise<string> {
 	const encoder = new TextEncoder();
@@ -8,52 +15,31 @@ export async function sha256(str: string): Promise<string> {
 	return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-export function mustGetEnv(name: string): string {
-	const v = process.env[name];
-	if (!v) throw new Error(`Missing env var: ${name}`);
-	return v;
-}
+type IncidentdBinding = { fetch: (req: Request) => Promise<Response> };
 
-/**
- * Creates HMAC authentication headers for worker API calls.
- * Headers:
- * - X-Auth-Ts: Unix timestamp in seconds
- * - X-Auth-Message: JSON stringified {clientId, userId}
- * - X-Auth-Sig: base64url(HMAC_SHA256(secret, ts:message))
- */
-export function createAuthHeaders(authContext: { clientId: string; userId: string }): Record<string, string> {
-	const secret = mustGetEnv("WORKER_SIGNING_SECRET");
-	const ts = Math.floor(Date.now() / 1000).toString();
-	const message = JSON.stringify({ clientId: authContext.clientId, userId: authContext.userId });
-	const baseString = `${ts}:${message}`;
-	const signature = createHmac("sha256", secret).update(baseString).digest("base64url");
-
-	return {
-		"X-Auth-Ts": ts,
-		"X-Auth-Message": message,
-		"X-Auth-Sig": signature,
+export async function incidentdFetch(
+	path: string,
+	authContext: { clientId: string; userId: string },
+	init?: RequestInit,
+): Promise<Response> {
+	const headers: Record<string, string> = {
+		...((init?.headers as Record<string, string>) ?? {}),
+		"X-Client-Id": authContext.clientId,
+		"X-User-Id": authContext.userId,
 	};
-}
 
-/**
- * Wrapper around fetch that adds HMAC authentication headers for worker API calls.
- */
-export async function signedFetch(url: string, authContext: { clientId: string; userId: string }, init?: RequestInit): Promise<Response> {
-	const authHeaders = createAuthHeaders(authContext);
-	const headers = new Headers(init?.headers);
-
-	for (const [key, value] of Object.entries(authHeaders)) {
-		headers.set(key, value);
+	const cfEnv = getCfEnv();
+	if (cfEnv?.INCIDENTD) {
+		return (cfEnv.INCIDENTD as IncidentdBinding).fetch(
+			new Request("https://incidentd" + path, { ...init, headers }),
+		);
 	}
 
-	return fetch(url, {
-		...init,
-		headers,
-	});
+	return fetch(`${process.env.INCIDENTS_URL}${path}`, { ...init, headers });
 }
 
 export function sign(obj: Record<string, unknown>) {
-	const secret = mustGetEnv("BETTER_AUTH_SECRET");
+	const secret = process.env.BETTER_AUTH_SECRET!;
 	const payload = JSON.stringify({ ...obj, ts: Date.now() });
 	const encoded = Buffer.from(payload).toString("base64url");
 	const signature = createHmac("sha256", secret).update(encoded).digest("base64url");
@@ -61,7 +47,7 @@ export function sign(obj: Record<string, unknown>) {
 }
 
 export function extractSigned<T extends Record<string, unknown>>(signed: string): T | null {
-	const secret = mustGetEnv("BETTER_AUTH_SECRET");
+	const secret = process.env.BETTER_AUTH_SECRET!;
 	const [encoded, signature] = signed.split(".");
 
 	if (!encoded || !signature) {

@@ -2,10 +2,10 @@
  * Evaluation harness for similar-incident prompts.
  *
  * Usage:
- *   OPENAI_API_KEY=... bun services/incidentd/src/agent/eval.similar-incidents.test.ts
- *   OPENAI_API_KEY=... bun services/incidentd/src/agent/eval.similar-incidents.test.ts --section=provider-decision --runs=3
- *   OPENAI_API_KEY=... bun services/incidentd/src/agent/eval.similar-incidents.test.ts --section=summarization --runs=3
- *   OPENAI_API_KEY=... bun services/incidentd/src/agent/eval.similar-incidents.test.ts --out=/tmp/sim-eval.json
+ *   OPENAI_API_KEY=... npx tsx services/incidentd/src/agent/eval.similar-incidents.test.ts
+ *   OPENAI_API_KEY=... npx tsx services/incidentd/src/agent/eval.similar-incidents.test.ts --section=provider-decision --runs=3
+ *   OPENAI_API_KEY=... npx tsx services/incidentd/src/agent/eval.similar-incidents.test.ts --section=summarization --runs=3
+ *   OPENAI_API_KEY=... npx tsx services/incidentd/src/agent/eval.similar-incidents.test.ts --out=/tmp/sim-eval.json
  */
 
 import { mkdir, writeFile } from "node:fs/promises";

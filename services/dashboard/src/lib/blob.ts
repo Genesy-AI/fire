@@ -1,5 +1,5 @@
-import { put } from "@vercel/blob";
 import { nanoid } from "nanoid";
+import { getCfEnv } from "./cf-context";
 
 const cacheControlMaxAge = 60 * 60 * 24 * 365;
 
@@ -15,11 +15,26 @@ function getExtensionFromName(name: string) {
 	return ext || "bin";
 }
 
-export async function uploadImageFromUrl(url: string, prefix: string): Promise<string | null> {
-	if (!process.env.FIRE_IMAGES_READ_WRITE_TOKEN) {
-		return null;
-	}
+type R2Bucket = {
+	put: (
+		key: string,
+		value: ArrayBuffer | Blob | string,
+		options?: { httpMetadata?: { cacheControl?: string; contentType?: string } },
+	) => Promise<unknown>;
+};
 
+function getR2(): { bucket: R2Bucket; publicUrl: string } | null {
+	const cfEnv = getCfEnv();
+	if (cfEnv?.IMAGES) {
+		return {
+			bucket: cfEnv.IMAGES as R2Bucket,
+			publicUrl: process.env.IMAGES_PUBLIC_URL ?? "",
+		};
+	}
+	return null;
+}
+
+export async function uploadImageFromUrl(url: string, prefix: string): Promise<string | null> {
 	let parsedUrl: URL;
 	try {
 		parsedUrl = new URL(url);
@@ -43,23 +58,24 @@ export async function uploadImageFromUrl(url: string, prefix: string): Promise<s
 
 	const extension = getExtensionFromContentType(contentType);
 	const pathname = `${prefix}/${nanoid()}.${extension}`;
-	const body = new Blob([await response.arrayBuffer()], { type: contentType });
+	const body = await response.arrayBuffer();
 
-	const blob = await put(pathname, body, {
-		token: process.env.FIRE_IMAGES_READ_WRITE_TOKEN,
-		access: "public",
-		contentType,
-		cacheControlMaxAge,
-	});
-
-	return blob.url;
-}
-
-export async function uploadImageFile(file: File, prefix: string): Promise<string | null> {
-	if (!process.env.FIRE_IMAGES_READ_WRITE_TOKEN) {
+	const r2 = getR2();
+	if (!r2) {
 		return null;
 	}
 
+	await r2.bucket.put(pathname, body, {
+		httpMetadata: {
+			cacheControl: `public, max-age=${cacheControlMaxAge}, immutable`,
+			contentType,
+		},
+	});
+
+	return `${r2.publicUrl}/${pathname}`;
+}
+
+export async function uploadImageFile(file: File, prefix: string): Promise<string | null> {
 	const contentType = file.type || "application/octet-stream";
 	if (!contentType.startsWith("image/")) {
 		return null;
@@ -68,12 +84,17 @@ export async function uploadImageFile(file: File, prefix: string): Promise<strin
 	const extension = getExtensionFromName(file.name || "");
 	const pathname = `${prefix}/${nanoid()}.${extension}`;
 
-	const blob = await put(pathname, file, {
-		token: process.env.FIRE_IMAGES_READ_WRITE_TOKEN,
-		access: "public",
-		contentType,
-		cacheControlMaxAge,
+	const r2 = getR2();
+	if (!r2) {
+		return null;
+	}
+
+	await r2.bucket.put(pathname, file, {
+		httpMetadata: {
+			cacheControl: `public, max-age=${cacheControlMaxAge}, immutable`,
+			contentType,
+		},
 	});
 
-	return blob.url;
+	return `${r2.publicUrl}/${pathname}`;
 }

@@ -5,8 +5,8 @@
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"scripts": {
-		"build": "bunx tsc",
-		"type-check": "bunx tsc --noEmit",
+		"build": "pnpm exec tsc",
+		"type-check": "pnpm exec tsc --noEmit",
 		"lint": "echo 'Lint runs from root'",
 		"clean": "rm -rf dist node_modules"
 	},

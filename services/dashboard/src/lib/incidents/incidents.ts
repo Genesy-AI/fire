@@ -7,14 +7,14 @@ import { authMiddleware } from "../auth/auth-middleware";
 import { requirePermission } from "../auth/authorization";
 import { db } from "../db";
 import type { SlackChannel } from "../slack";
-import { signedFetch } from "../utils/server";
+import { incidentdFetch } from "../utils/server";
 
 export const getIncidents = createServerFn({
 	method: "GET",
 })
 	.middleware([authMiddleware, requirePermission("incident.read")])
 	.handler(async ({ context }) => {
-		const response = await signedFetch(process.env.INCIDENTS_URL!, { clientId: context.clientId, userId: context.userId });
+		const response = await incidentdFetch("/", { clientId: context.clientId, userId: context.userId });
 		if (!response.ok) {
 			throw new Error("Failed to fetch incidents");
 		}
@@ -31,7 +31,7 @@ export const getIncidentById = createServerFn({ method: "GET" })
 	.inputValidator((data: { id: string }) => data)
 	.middleware([authMiddleware, requirePermission("incident.read")])
 	.handler(async ({ data, context }) => {
-		const response = await signedFetch(`${process.env.INCIDENTS_URL}/${data.id}`, { clientId: context.clientId, userId: context.userId });
+		const response = await incidentdFetch(`/${data.id}`, { clientId: context.clientId, userId: context.userId });
 		if (!response.ok) {
 			throw new Error("Failed to fetch incident");
 		}
@@ -96,8 +96,8 @@ export const updateAssignee = createServerFn({ method: "POST" })
 	.inputValidator((data: { id: string; slackId: string }) => data)
 	.middleware([authMiddleware, requirePermission("incident.write")])
 	.handler(async ({ data, context }) => {
-		const response = await signedFetch(
-			`${process.env.INCIDENTS_URL}/${data.id}/assignee`,
+		const response = await incidentdFetch(
+			`/${data.id}/assignee`,
 			{ clientId: context.clientId, userId: context.userId },
 			{
 				method: "POST",
@@ -114,8 +114,8 @@ export const updateSeverity = createServerFn({ method: "POST" })
 	.inputValidator((data: { id: string; severity: IS["severity"] }) => data)
 	.middleware([authMiddleware, requirePermission("incident.write")])
 	.handler(async ({ data, context }) => {
-		const response = await signedFetch(
-			`${process.env.INCIDENTS_URL}/${data.id}/severity`,
+		const response = await incidentdFetch(
+			`/${data.id}/severity`,
 			{ clientId: context.clientId, userId: context.userId },
 			{
 				method: "POST",
@@ -132,8 +132,8 @@ export const updateStatus = createServerFn({ method: "POST" })
 	.inputValidator((data: { id: string; status: Exclude<IS["status"], "open">; message: string }) => data)
 	.middleware([authMiddleware, requirePermission("incident.write")])
 	.handler(async ({ data, context }) => {
-		const response = await signedFetch(
-			`${process.env.INCIDENTS_URL}/${data.id}/status`,
+		const response = await incidentdFetch(
+			`/${data.id}/status`,
 			{ clientId: context.clientId, userId: context.userId },
 			{
 				method: "POST",
@@ -185,8 +185,8 @@ export const sendSlackMessage = createServerFn({ method: "POST" })
 			slackUserId = slackData.botUserId;
 		}
 
-		const response = await signedFetch(
-			`${process.env.INCIDENTS_URL}/${data.id}/message`,
+		const response = await incidentdFetch(
+			`/${data.id}/message`,
 			{ clientId: context.clientId, userId: context.userId },
 			{
 				method: "POST",
@@ -312,8 +312,8 @@ export const startIncident = createServerFn({ method: "POST" })
 			name: serviceRow.name,
 			prompt: serviceRow.prompt ?? null,
 		}));
-		const response = await signedFetch(
-			process.env.INCIDENTS_URL!,
+		const response = await incidentdFetch(
+			"/",
 			{ clientId: context.clientId, userId: context.userId },
 			{
 				method: "POST",

@@ -28,16 +28,15 @@
 		"README.md"
 	],
 	"scripts": {
-		"build": "bunx tsc",
-		"type-check": "bunx tsc --noEmit",
-		"db:generate": "bunx drizzle-kit generate",
-		"db:migrate": "bunx drizzle-kit migrate",
-		"db:studio": "bunx drizzle-kit studio",
+		"build": "pnpm exec tsc",
+		"type-check": "pnpm exec tsc --noEmit",
+		"db:generate": "pnpm exec drizzle-kit generate",
+		"db:migrate": "pnpm exec drizzle-kit migrate",
+		"db:studio": "pnpm exec drizzle-kit studio",
 		"lint": "echo 'Lint runs from root'",
 		"clean": "rm -rf dist node_modules"
 	},
 	"dependencies": {
-		"@types/bun": "^1.3.5",
 		"drizzle-orm": "catalog:"
 	},
 	"devDependencies": {

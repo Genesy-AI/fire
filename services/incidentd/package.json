@@ -9,7 +9,7 @@
 		"start": "wrangler dev",
 		"test": "vitest run --config vitest.config.ts",
 		"cf-typegen": "wrangler types",
-		"type-check": "bunx tsc --noEmit",
+		"type-check": "pnpm exec tsc --noEmit",
 		"lint": "echo 'Lint runs from root'",
 		"clean": "rm -rf node_modules .wrangler"
 	},
@@ -17,8 +17,7 @@
 		"@slack/types": "^2.19.0",
 		"@types/node": "^25.0.3",
 		"@cloudflare/vitest-pool-workers": "^0.12.18",
-		"vitest": "^2.1.8",
-		"wrangler": "^4.56.0"
+		"vitest": "^2.1.8"
 	},
 	"dependencies": {
 		"@fire/common": "workspace:*",
