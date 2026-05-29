@@ -14,7 +14,7 @@ import { createServerFn } from "@tanstack/solid-start";
 import { and, desc, eq, exists, gt, inArray, lt, lte, type SQL, sql } from "drizzle-orm";
 import { env } from "cloudflare:workers";
 import { getDefaultRotationAnchor } from "~/lib/rotations/rotation-timezone";
-import { type RotationScheduleWakeAction } from "~/workflows/rotation/schedule";
+import type { RotationScheduleWakeAction } from "~/workflows/rotation/schedule";
 import { authMiddleware } from "../auth/auth-middleware";
 import { assertRolePermission, isWorkspaceCatalogWriter, requirePermission } from "../auth/authorization";
 import { assertTeamAdminOrWorkspaceCatalogWriter } from "../auth/authorization.server";
