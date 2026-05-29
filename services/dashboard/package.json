@@ -5,9 +5,9 @@
 	"scripts": {
 		"dev": "vite dev --port 3000",
 		"dev:worker": "wrangler dev",
-		"build": "vite build",
+		"build": "BETTER_AUTH_SECRET=build-placeholder vite build",
 		"preview": "vite preview",
-		"deploy": "vite build && wrangler deploy",
+		"deploy": "BETTER_AUTH_SECRET=build-placeholder vite build && wrangler deploy",
 		"cf-typegen": "wrangler types",
 		"test": "vitest run",
 		"type-check": "tsc --noEmit",
@@ -51,6 +51,6 @@
 		"vite": "^7.3.0",
 		"vite-plugin-solid": "^2.11.10",
 		"vite-tsconfig-paths": "^6.0.3",
-		"wrangler": "^4.94.0"
+		"wrangler": "catalog:"
 	}
 }
