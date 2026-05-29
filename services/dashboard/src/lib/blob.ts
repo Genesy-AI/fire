@@ -1,5 +1,5 @@
+import { env } from "cloudflare:workers";
 import { nanoid } from "nanoid";
-import { getCfEnv } from "./cf-context";
 
 const cacheControlMaxAge = 60 * 60 * 24 * 365;
 
@@ -15,19 +15,10 @@ function getExtensionFromName(name: string) {
 	return ext || "bin";
 }
 
-type R2Bucket = {
-	put: (
-		key: string,
-		value: ArrayBuffer | Blob | string,
-		options?: { httpMetadata?: { cacheControl?: string; contentType?: string } },
-	) => Promise<unknown>;
-};
-
-function getR2(): { bucket: R2Bucket; publicUrl: string } | null {
-	const cfEnv = getCfEnv();
-	if (cfEnv?.IMAGES) {
+function getR2(): { bucket: typeof env.IMAGES; publicUrl: string } | null {
+	if (env.IMAGES) {
 		return {
-			bucket: cfEnv.IMAGES as R2Bucket,
+			bucket: env.IMAGES,
 			publicUrl: process.env.IMAGES_PUBLIC_URL ?? "",
 		};
 	}

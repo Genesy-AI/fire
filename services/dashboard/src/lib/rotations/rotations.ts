@@ -12,9 +12,9 @@ import type { SlackIntegrationData } from "@fire/db/schema";
 import { client, entryPoint, integration, rotation, rotationOverride, rotationWithAssignee, user } from "@fire/db/schema";
 import { createServerFn } from "@tanstack/solid-start";
 import { and, desc, eq, exists, gt, inArray, lt, lte, type SQL, sql } from "drizzle-orm";
-import { resumeHook, start } from "workflow/api";
+import { env } from "cloudflare:workers";
 import { getDefaultRotationAnchor } from "~/lib/rotations/rotation-timezone";
-import { getRotationScheduleWakeToken, type RotationScheduleWakeAction, rotationScheduleWorkflow } from "~/workflows/rotation/schedule";
+import { type RotationScheduleWakeAction } from "~/workflows/rotation/schedule";
 import { authMiddleware } from "../auth/auth-middleware";
 import { assertRolePermission, isWorkspaceCatalogWriter, requirePermission } from "../auth/authorization";
 import { assertTeamAdminOrWorkspaceCatalogWriter } from "../auth/authorization.server";
@@ -27,12 +27,17 @@ import { createWorkspaceUser } from "../users/users.server";
 export type { SlackUser } from "../slack";
 
 async function startRotationScheduleWorkflow(rotationId: string): Promise<void> {
-	await start(rotationScheduleWorkflow, [{ rotationId }]);
+	try {
+		await env.ROTATION_WORKFLOW.create({ id: rotationId, params: { rotationId } });
+	} catch {
+		// already running — idempotent
+	}
 }
 
 async function notifyRotationScheduleWorkflow(rotationId: string, signal: { deleted?: boolean; action?: RotationScheduleWakeAction }): Promise<void> {
 	try {
-		await resumeHook(getRotationScheduleWakeToken(rotationId), signal);
+		const instance = await env.ROTATION_WORKFLOW.get(rotationId);
+		await instance.sendEvent({ type: "wake", payload: signal });
 	} catch (error) {
 		console.error("Failed to notify rotation schedule workflow", {
 			rotationId,
