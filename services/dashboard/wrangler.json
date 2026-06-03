@@ -5,7 +5,10 @@
 	"compatibility_flags": ["nodejs_compat"],
 	"main": "src/server.ts",
 	"vars": {
-		"CLIENT_ID": "enginy"
+		"BETTER_AUTH_URL": "https://firedash.enginy.ai",
+		"CLIENT_ID": "genesy",
+		"SLACK_BOT_SCOPES": "app_mentions:read,channels:history,channels:join,channels:manage,channels:read,chat:write,emoji:read,groups:history,groups:read,pins:write,reactions:write,users:read,users:read.email",
+		"VITE_APP_URL": "https://firedash.enginy.ai"
 	},
 	"services": [
 		{
@@ -16,7 +19,7 @@
 	"hyperdrive": [
 		{
 			"binding": "DB",
-			"id": "ab77c35dd8ff4bcd85f01f55b76a9bed"
+			"id": "c96e9f17d90046d59a9e8d49219e080e"
 		}
 	],
 	"r2_buckets": [

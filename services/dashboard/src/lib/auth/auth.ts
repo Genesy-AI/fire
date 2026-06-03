@@ -1,4 +1,5 @@
 import type { SlackIntegrationData } from "@fire/db/schema";
+import * as schema from "@fire/db/schema";
 import { client, integration, userRole, user as userTable } from "@fire/db/schema";
 import { APIError, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -14,6 +15,7 @@ export const auth = betterAuth({
 	secret: process.env.BETTER_AUTH_SECRET,
 	database: drizzleAdapter(db, {
 		provider: "pg",
+		schema,
 	}),
 	socialProviders: {
 		google: {
@@ -157,11 +159,7 @@ export const auth = betterAuth({
 						});
 					}
 
-					const [foundClient] = await db
-						.select()
-						.from(client)
-						.where(eq(client.id, process.env.CLIENT_ID!))
-						.limit(1);
+					const [foundClient] = await db.select().from(client).where(eq(client.id, process.env.CLIENT_ID!)).limit(1);
 
 					if (!foundClient) {
 						throw new APIError("UNPROCESSABLE_ENTITY", {

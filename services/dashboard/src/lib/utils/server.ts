@@ -1,5 +1,5 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
 import { env } from "cloudflare:workers";
+import { createHmac, timingSafeEqual } from "node:crypto";
 
 export function mustGetEnv(name: string): string {
 	const v = process.env[name];
@@ -15,11 +15,7 @@ export async function sha256(str: string): Promise<string> {
 	return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-export async function incidentdFetch(
-	path: string,
-	authContext: { clientId: string; userId: string },
-	init?: RequestInit,
-): Promise<Response> {
+export async function incidentdFetch(path: string, authContext: { clientId: string; userId: string }, init?: RequestInit): Promise<Response> {
 	const headers: Record<string, string> = {
 		...((init?.headers as Record<string, string>) ?? {}),
 		"X-Client-Id": authContext.clientId,
@@ -27,9 +23,8 @@ export async function incidentdFetch(
 	};
 
 	if (env.INCIDENTD) {
-		return env.INCIDENTD.fetch(
-			new Request("https://incidentd" + path, { ...init, headers }),
-		);
+		const incidentdPath = path === "/" ? "/dashboard" : `/dashboard${path}`;
+		return env.INCIDENTD.fetch(new Request(`https://incidentd${incidentdPath}`, { ...init, headers }));
 	}
 
 	return fetch(`${process.env.INCIDENTS_URL}${path}`, { ...init, headers });

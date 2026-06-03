@@ -4,9 +4,9 @@ compatibility_flags = ["nodejs_compat"]
 main = "src/index.ts"
 
 [vars]
-STATUS_PAGE_DOMAIN = ""
-APP_URL = ""
+STATUS_PAGE_DOMAIN = "status.enginy.ai"
+APP_URL = "https://app.enginy.ai"
 
 [[hyperdrive]]
 binding = "DB"
-id = "ab77c35dd8ff4bcd85f01f55b76a9bed"
+id = "c96e9f17d90046d59a9e8d49219e080e"

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { installGitHubWorkspaceIntegration } from "~/lib/integrations/integrations.server";
-import { extractSigned } from "~/lib/utils/server";
+import { extractSigned, mustGetEnv } from "~/lib/utils/server";
 
 export const Route = createFileRoute("/github/oauth/callback")({
 	server: {
@@ -28,7 +28,7 @@ export const Route = createFileRoute("/github/oauth/callback")({
 					installationId,
 				});
 
-				const redirectTo = new URL("/settings/workspace/integrations?installed=github", url.origin);
+				const redirectTo = new URL("/settings/workspace/integrations?installed=github", mustGetEnv("VITE_APP_URL"));
 				return Response.redirect(redirectTo.toString(), 302);
 			},
 		},

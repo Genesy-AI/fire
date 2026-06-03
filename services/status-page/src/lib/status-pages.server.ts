@@ -7,7 +7,7 @@ import {
 	statusPageService as statusPageServiceTable,
 	statusPage as statusPageTable,
 } from "@fire/db/schema";
-import { and, eq, type InferSelectModel, sql } from "drizzle-orm";
+import { and, eq, type InferSelectModel } from "drizzle-orm";
 import { SNAPSHOT_CACHE, STANDARD_CACHE, withCache } from "./cache";
 import { db } from "./db";
 import { normalizeDomain } from "./status-pages.utils";
@@ -17,14 +17,6 @@ type ServiceRow = InferSelectModel<typeof serviceTable>;
 type IncidentAffectionRow = InferSelectModel<typeof incidentAffectionTable>;
 type IncidentAffectionServiceRow = InferSelectModel<typeof incidentAffectionServiceTable>;
 type IncidentAffectionUpdateRow = InferSelectModel<typeof incidentAffectionUpdateTable>;
-
-const SNAPSHOT_PAGE_COLUMNS = {
-	id: true,
-	name: true,
-	slug: true,
-	createdAt: true,
-	updatedAt: true,
-} as const;
 
 type StatusPageLookup = { slug: string } | { domain: string };
 
@@ -45,7 +37,6 @@ type StatusPageContentRow = Pick<
 	| "updatedAt"
 >;
 
-type SnapshotStatusPageRow = Pick<StatusPageRow, "id" | "name" | "slug" | "createdAt" | "updatedAt">;
 type StatusPageContentWithClientRow = StatusPageContentRow & { clientImage: string | null };
 
 export type StatusPageService = Pick<ServiceRow, "id" | "name" | "imageUrl"> & {
@@ -146,27 +137,6 @@ async function findStatusPageContentWithClientRow(lookup: StatusPageLookup): Pro
 		.limit(1);
 
 	return rows[0] ?? null;
-}
-
-async function findSnapshotStatusPageRow(lookup: StatusPageLookup): Promise<SnapshotStatusPageRow | null> {
-	if ("slug" in lookup) {
-		const pageRow = await db.query.statusPage.findFirst({
-			where: { slug: lookup.slug },
-			columns: SNAPSHOT_PAGE_COLUMNS,
-		});
-		return pageRow ?? null;
-	}
-
-	const normalizedDomain = normalizeDomain(lookup.domain);
-	if (!normalizedDomain) {
-		return null;
-	}
-
-	const pageRow = await db.query.statusPage.findFirst({
-		where: { customDomain: normalizedDomain },
-		columns: SNAPSHOT_PAGE_COLUMNS,
-	});
-	return pageRow ?? null;
 }
 
 async function buildStatusPagePublicData(pageRow: StatusPageContentWithClientRow): Promise<StatusPagePublicData> {
@@ -547,73 +517,34 @@ export function computeLiveStatusInfo(data: StatusPagePublicData, fallbackTimest
 	return { indicator, description, lastUpdatedAt, version };
 }
 
-type SnapshotAggregateRow = {
-	total_affection_count: string;
-	active_count: string;
-	active_major_count: string;
-	total_update_count: string;
-	max_event_ts: string | null;
-};
-
-async function fetchStatusSnapshotDirect(pageRow: SnapshotStatusPageRow): Promise<StatusSnapshotData> {
-	const { rows } = await db.execute<SnapshotAggregateRow>(sql`
-		WITH page_affections AS (
-			SELECT DISTINCT ia.id, ia.created_at, ia.updated_at, ia.resolved_at,
-				BOOL_OR(ias.impact = 'major') as has_major
-			FROM status_page_service sps
-			JOIN incident_affection_service ias ON ias.service_id = sps.service_id
-			JOIN incident_affection ia ON ia.id = ias.affection_id
-			WHERE sps.status_page_id = ${pageRow.id}
-			GROUP BY ia.id, ia.created_at, ia.updated_at, ia.resolved_at
-		)
-		SELECT
-			COALESCE(COUNT(*), 0) as total_affection_count,
-			COALESCE(COUNT(*) FILTER (WHERE resolved_at IS NULL), 0) as active_count,
-			COALESCE(COUNT(*) FILTER (WHERE resolved_at IS NULL AND has_major), 0) as active_major_count,
-			(SELECT COALESCE(COUNT(*), 0) FROM incident_affection_update
-			 WHERE affection_id IN (SELECT id FROM page_affections)) as total_update_count,
-			GREATEST(
-				MAX(created_at), MAX(updated_at), MAX(resolved_at),
-				(SELECT MAX(created_at) FROM incident_affection_update
-				 WHERE affection_id IN (SELECT id FROM page_affections))
-			) as max_event_ts
-		FROM page_affections
-	`);
-
-	const row = rows[0];
-	const totalAffectionCount = Number(row?.total_affection_count ?? 0);
-	const activeCount = Number(row?.active_count ?? 0);
-	const activeMajorCount = Number(row?.active_major_count ?? 0);
+function buildStatusSnapshotFromPublicData(data: StatusPagePublicData): StatusSnapshotData {
+	const activeAffections = data.affections.filter((affection) => !affection.resolvedAt);
+	const activeCount = activeAffections.length;
+	const activeMajorCount = activeAffections.filter((affection) => affection.services.some((service) => service.impact === "major")).length;
 	const activePartialCount = activeCount - activeMajorCount;
-	const totalUpdateCount = Number(row?.total_update_count ?? 0);
-
-	const candidates = [toTimestamp(pageRow.createdAt), toTimestamp(pageRow.updatedAt), row?.max_event_ts ? new Date(row.max_event_ts).getTime() : null].filter(
-		(v): v is number => v !== null && Number.isFinite(v),
-	);
-
-	const lastUpdatedAt = new Date(candidates.length > 0 ? Math.max(...candidates) : Date.now());
-	const version = `${lastUpdatedAt.getTime()}-${activeCount}-${totalUpdateCount}-${totalAffectionCount}`;
+	const liveStatus = computeLiveStatusInfo(data);
 
 	return {
-		page: { id: pageRow.id, name: pageRow.name, slug: pageRow.slug },
+		page: { id: data.page.id, name: data.page.name, slug: data.page.slug },
 		overallStatus: activeCount > 0 ? "issues" : "operational",
 		hasActiveIncidents: activeCount > 0,
 		activeIncidentCount: activeCount,
 		activeMajorIncidentCount: activeMajorCount,
 		activePartialIncidentCount: activePartialCount,
-		totalIncidentCount: totalAffectionCount,
-		lastUpdatedAt,
-		version,
+		totalIncidentCount: data.affections.length,
+		lastUpdatedAt: liveStatus.lastUpdatedAt,
+		version: liveStatus.version,
 	};
 }
 
 async function fetchStatusSnapshotByLookup(lookup: StatusPageLookup): Promise<StatusSnapshotData | null> {
-	const pageRow = await findSnapshotStatusPageRow(lookup);
+	const pageRow = await findStatusPageContentWithClientRow(lookup);
 	if (!pageRow) {
 		return null;
 	}
 
-	return fetchStatusSnapshotDirect(pageRow);
+	const publicData = await buildStatusPagePublicData(pageRow);
+	return buildStatusSnapshotFromPublicData(publicData);
 }
 
 export async function fetchStatusSnapshotByDomain(domain: string): Promise<StatusSnapshotData | null> {

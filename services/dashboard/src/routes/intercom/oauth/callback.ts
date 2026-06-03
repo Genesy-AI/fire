@@ -147,7 +147,7 @@ export const Route = createFileRoute("/intercom/oauth/callback")({
 						},
 					});
 
-				const redirectTo = new URL("/settings/workspace/integrations?installed=intercom", url.origin);
+				const redirectTo = new URL("/settings/workspace/integrations?installed=intercom", mustGetEnv("VITE_APP_URL"));
 				return Response.redirect(redirectTo.toString(), 302);
 			},
 		},

@@ -1,0 +1,20 @@
+{
+	"$schema": "../../node_modules/wrangler/config-schema.json",
+	"name": "incidentd-slack-ingress",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-05-27",
+	"workers_dev": true,
+	"preview_urls": false,
+	"observability": {
+		"enabled": false,
+		"logs": {
+			"enabled": false
+		}
+	},
+	"services": [
+		{
+			"binding": "INCIDENTD",
+			"service": "incidentd"
+		}
+	]
+}

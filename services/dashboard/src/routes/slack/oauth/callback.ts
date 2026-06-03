@@ -174,7 +174,7 @@ export const Route = createFileRoute("/slack/oauth/callback")({
 						});
 				}
 
-				const redirectTo = new URL("/settings/workspace/integrations?installed=slack", url.origin);
+				const redirectTo = new URL("/settings/workspace/integrations?installed=slack", mustGetEnv("VITE_APP_URL"));
 
 				return Response.redirect(redirectTo.toString(), 302);
 			},

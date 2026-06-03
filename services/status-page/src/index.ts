@@ -1,12 +1,12 @@
-import { Hono, type Context } from "hono";
+import { type Context, Hono } from "hono";
+import { STANDARD_CACHE, withCache } from "./lib/cache";
+import { withRequestDb } from "./lib/db";
 import {
 	buildIntercomCanvasContentResponseByStatusPageId,
 	buildIntercomInboxCanvasInitializeResponse,
 	buildIntercomLiveCanvasInitializeResponse,
 	verifyIntercomSignature,
 } from "./lib/intercom.server";
-import { STANDARD_CACHE, withCache } from "./lib/cache";
-import { initDb } from "./lib/db";
 import { buildStatusSnapshotResponse } from "./lib/status-pages.api";
 import { buildHistoryFeedResponse, type FeedFormat } from "./lib/status-pages.feed";
 import { buildIncidentDetailResponse, buildIncidentHistoryResponse, buildStatusPageResponse } from "./lib/status-pages.render";
@@ -27,8 +27,7 @@ const app = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;
 
 app.use("*", async (c, next) => {
-	initDb(c.env.DB.connectionString);
-	await next();
+	await withRequestDb(c.env.DB.connectionString, next);
 });
 
 function getHost(c: AppContext): string | null {
@@ -117,9 +116,7 @@ app.post("/api/intercom/canvas/initialize", async (c) => {
 
 app.post("/intercom/:statusPageId", async (c) => {
 	const { statusPageId } = c.req.param();
-	const response = await withCache(`intercom:${statusPageId}`, STANDARD_CACHE, () =>
-		buildIntercomCanvasContentResponseByStatusPageId(statusPageId),
-	);
+	const response = await withCache(`intercom:${statusPageId}`, STANDARD_CACHE, () => buildIntercomCanvasContentResponseByStatusPageId(statusPageId));
 	if (response.status !== 200) return c.text("Not found", 404);
 
 	return c.json(response.response);

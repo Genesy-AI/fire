@@ -97,7 +97,7 @@ export const Route = createFileRoute("/notion/oauth/callback")({
 						},
 					});
 
-				const redirectTo = new URL("/settings/workspace/integrations?installed=notion", url.origin);
+				const redirectTo = new URL("/settings/workspace/integrations?installed=notion", mustGetEnv("VITE_APP_URL"));
 
 				return Response.redirect(redirectTo.toString(), 302);
 			},
