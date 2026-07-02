@@ -1,5 +1,6 @@
 import type { SlackIntegrationData } from "@fire/db/schema";
 import { client, integration, userRole, user as userTable } from "@fire/db/schema";
+import * as schema from "@fire/db/schema";
 import { APIError, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { and, count, eq } from "drizzle-orm";
@@ -14,6 +15,7 @@ export const auth = betterAuth({
 	secret: process.env.BETTER_AUTH_SECRET,
 	database: drizzleAdapter(db, {
 		provider: "pg",
+		schema,
 	}),
 	socialProviders: {
 		google: {
