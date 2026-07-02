@@ -24,7 +24,7 @@
 		"@fire/common": "workspace:*",
 		"@fire/db": "workspace:*",
 		"drizzle-orm": "catalog:",
-		"hono": "^4.11.1",
+		"hono": "^4.12.25",
 		"openai": "^6.8.1",
 		"pg": "^8.16.3"
 	}
