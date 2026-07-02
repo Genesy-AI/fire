@@ -5,6 +5,7 @@
 	"scripts": {
 		"build": "echo 'Nothing to build for incidentd'",
 		"deploy": "wrangler deploy",
+		"deploy:preview": "wrangler versions upload",
 		"dev": "wrangler dev",
 		"start": "wrangler dev",
 		"test": "vitest run --config vitest.config.ts",

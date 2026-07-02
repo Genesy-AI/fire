@@ -69,7 +69,7 @@
 	"hyperdrive": [
 		{
 			"binding": "db",
-			"id": "ab77c35dd8ff4bcd85f01f55b76a9bed",
+			"id": "c96e9f17d90046d59a9e8d49219e080e",
 			"localConnectionString": "postgresql://postgres:postgres@localhost:5432/fire",
 		},
 	],
@@ -94,7 +94,7 @@
 	],
 	"vars": {
 		"FRONTEND_URL": "https://firedash.enginy.ai",
-		"CLIENT_ID": "enginy",
+		"CLIENT_ID": "genesy",
 	},
 	"workers_dev": false,
 	"preview_urls": false,

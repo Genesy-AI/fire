@@ -1,5 +1,6 @@
 {
-	"name": "status-page",
+	"name": "slack-ingress",
+	"version": "0.0.0",
 	"private": true,
 	"type": "module",
 	"scripts": {
@@ -7,19 +8,14 @@
 		"build": "wrangler deploy --dry-run",
 		"deploy": "wrangler deploy",
 		"deploy:preview": "wrangler versions upload",
+		"cf-typegen": "wrangler types",
 		"type-check": "tsc --noEmit",
 		"lint": "echo 'Lint runs from root'",
-		"clean": "rm -rf node_modules"
-	},
-	"dependencies": {
-		"@fire/db": "workspace:*",
-		"drizzle-orm": "catalog:",
-		"hono": "^4.11.1",
-		"pg": "catalog:"
+		"clean": "rm -rf node_modules .wrangler"
 	},
 	"devDependencies": {
-		"@types/node": "^22.15.3",
-		"@types/pg": "catalog:",
+		"@cloudflare/workers-types": "^4.20260527.1",
+		"@types/node": "^25.0.3",
 		"typescript": "catalog:",
 		"wrangler": "catalog:"
 	}

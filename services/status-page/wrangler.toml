@@ -1,8 +1,0 @@
-name = "status-page"
-compatibility_date = "2025-12-19"
-compatibility_flags = ["nodejs_compat"]
-pages_build_output_dir = ".open-next/assets"
-
-[[hyperdrive]]
-binding = "DB"
-id = "ab77c35dd8ff4bcd85f01f55b76a9bed"
