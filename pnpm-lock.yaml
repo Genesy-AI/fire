@@ -204,6 +204,21 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@25.9.1)(lightningcss@1.32.0)
 
+  services/slack-ingress:
+    devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^4.20260527.1
+        version: 4.20260527.1
+      '@types/node':
+        specifier: ^25.0.3
+        version: 25.9.1
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      wrangler:
+        specifier: 'catalog:'
+        version: 4.95.0(@cloudflare/workers-types@4.20260527.1)
+
   services/status-page:
     dependencies:
       '@fire/db':
@@ -3469,6 +3484,7 @@ packages:
   tsconfck@3.1.6:
     resolution: {integrity: sha512-ks6Vjr/jEw0P1gmOVwutM3B7fWxoWBL2KRDb1JfqGVawBmO5UsvmWOQFGHBPl5yxYz4eERr19E6L7NMv+Fej4w==}
     engines: {node: ^18 || >=20}
+    deprecated: unmaintained
     hasBin: true
     peerDependencies:
       typescript: ^5.0.0
