@@ -8,7 +8,7 @@ import {
 	statusPage as statusPageTable,
 } from "@fire/db/schema";
 import { and, eq, type InferSelectModel, sql } from "drizzle-orm";
-import { SNAPSHOT_CACHE, STANDARD_CACHE, withCache } from "./cache";
+import { cacheLife } from "next/cache";
 import { db } from "./db";
 import { normalizeDomain } from "./status-pages.utils";
 
@@ -17,6 +17,9 @@ type ServiceRow = InferSelectModel<typeof serviceTable>;
 type IncidentAffectionRow = InferSelectModel<typeof incidentAffectionTable>;
 type IncidentAffectionServiceRow = InferSelectModel<typeof incidentAffectionServiceTable>;
 type IncidentAffectionUpdateRow = InferSelectModel<typeof incidentAffectionUpdateTable>;
+
+const STANDARD_CACHE_LIFE = { revalidate: 30, expire: 60 } as const;
+const SNAPSHOT_CACHE_LIFE = { revalidate: 10, expire: 30 } as const;
 
 const SNAPSHOT_PAGE_COLUMNS = {
 	id: true,
@@ -261,11 +264,17 @@ async function fetchPublicStatusPageByLookup(lookup: StatusPageLookup): Promise<
 }
 
 export async function fetchPublicStatusPageBySlug(slug: string): Promise<StatusPagePublicData | null> {
-	return withCache(`status-page:slug:${slug}`, STANDARD_CACHE, () => fetchPublicStatusPageByLookup({ slug }));
+	"use cache";
+	cacheLife(STANDARD_CACHE_LIFE);
+
+	return fetchPublicStatusPageByLookup({ slug });
 }
 
 export async function fetchPublicStatusPageByDomain(domain: string): Promise<StatusPagePublicData | null> {
-	return withCache(`status-page:domain:${domain}`, STANDARD_CACHE, () => fetchPublicStatusPageByLookup({ domain }));
+	"use cache";
+	cacheLife(STANDARD_CACHE_LIFE);
+
+	return fetchPublicStatusPageByLookup({ domain });
 }
 
 export type IncidentHistoryItem = {
@@ -377,11 +386,15 @@ async function fetchIncidentHistoryByLookup(lookup: StatusPageLookup): Promise<I
 }
 
 export async function fetchIncidentHistoryByDomain(domain: string): Promise<IncidentHistoryData | null> {
-	return withCache(`history:domain:${domain}`, STANDARD_CACHE, () => fetchIncidentHistoryByLookup({ domain }));
+	"use cache";
+	cacheLife(STANDARD_CACHE_LIFE);
+	return fetchIncidentHistoryByLookup({ domain });
 }
 
 export async function fetchIncidentHistoryBySlug(slug: string): Promise<IncidentHistoryData | null> {
-	return withCache(`history:slug:${slug}`, STANDARD_CACHE, () => fetchIncidentHistoryByLookup({ slug }));
+	"use cache";
+	cacheLife(STANDARD_CACHE_LIFE);
+	return fetchIncidentHistoryByLookup({ slug });
 }
 
 export type IncidentDetailUpdate = {
@@ -478,11 +491,15 @@ async function fetchIncidentDetailByLookup(lookup: StatusPageLookup, incidentId:
 }
 
 export async function fetchIncidentDetailByDomain(domain: string, incidentId: string): Promise<IncidentDetailData | null> {
-	return withCache(`incident:domain:${domain}:${incidentId}`, STANDARD_CACHE, () => fetchIncidentDetailByLookup({ domain }, incidentId));
+	"use cache";
+	cacheLife(STANDARD_CACHE_LIFE);
+	return fetchIncidentDetailByLookup({ domain }, incidentId);
 }
 
 export async function fetchIncidentDetailBySlug(slug: string, incidentId: string): Promise<IncidentDetailData | null> {
-	return withCache(`incident:slug:${slug}:${incidentId}`, STANDARD_CACHE, () => fetchIncidentDetailByLookup({ slug }, incidentId));
+	"use cache";
+	cacheLife(STANDARD_CACHE_LIFE);
+	return fetchIncidentDetailByLookup({ slug }, incidentId);
 }
 
 export type StatusSnapshotData = {
@@ -617,9 +634,13 @@ async function fetchStatusSnapshotByLookup(lookup: StatusPageLookup): Promise<St
 }
 
 export async function fetchStatusSnapshotByDomain(domain: string): Promise<StatusSnapshotData | null> {
-	return withCache(`snapshot:domain:${domain}`, SNAPSHOT_CACHE, () => fetchStatusSnapshotByLookup({ domain }));
+	"use cache";
+	cacheLife(SNAPSHOT_CACHE_LIFE);
+	return fetchStatusSnapshotByLookup({ domain });
 }
 
 export async function fetchStatusSnapshotBySlug(slug: string): Promise<StatusSnapshotData | null> {
-	return withCache(`snapshot:slug:${slug}`, SNAPSHOT_CACHE, () => fetchStatusSnapshotByLookup({ slug }));
+	"use cache";
+	cacheLife(SNAPSHOT_CACHE_LIFE);
+	return fetchStatusSnapshotByLookup({ slug });
 }

@@ -4,16 +4,13 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev --port 3000",
-		"dev:worker": "wrangler dev",
-		"build": "BETTER_AUTH_SECRET=build-placeholder vite build",
+		"build": "vite build",
 		"preview": "vite preview",
-		"deploy": "wrangler deploy -c dist/server/wrangler.json",
-		"deploy:preview": "wrangler versions upload -c dist/server/wrangler.json",
-		"cf-typegen": "wrangler types",
 		"test": "vitest run",
 		"type-check": "tsc --noEmit",
 		"lint": "echo 'Lint runs from root'",
-		"clean": "rm -rf .output node_modules dist"
+		"start": "node .output/server/index.mjs",
+		"clean": "rm -rf .output node_modules .vercel"
 	},
 	"dependencies": {
 		"@ark-ui/solid": "^5.30.0",
@@ -34,24 +31,22 @@
 		"drizzle-orm": "catalog:",
 		"lucide-solid": "^0.562.0",
 		"nanoid": "^5.1.6",
+		"nitro": "^3.0.1-alpha.1",
 		"pg": "catalog:",
 		"solid-js": "^1.9.10",
-		"tailwind-merge": "^3.4.0"
+		"tailwind-merge": "^3.4.0",
+		"workflow": "4.2.0-beta.67"
 	},
 	"devDependencies": {
-		"@cloudflare/vite-plugin": "^1.39.0",
-		"@cloudflare/workers-types": "^4.20260527.1",
 		"@tailwindcss/vite": "^4.1.18",
 		"@tanstack/devtools-vite": "^0.3.12",
 		"@tanstack/router-plugin": "1.136.17",
-		"@types/node": "^25.9.1",
-		"@types/pg": "catalog:",
 		"tailwindcss": "^4.1.18",
 		"tailwindcss-animate": "^1.0.7",
 		"typescript": "catalog:",
+		"@types/pg": "catalog:",
 		"vite": "^7.3.0",
 		"vite-plugin-solid": "^2.11.10",
-		"vite-tsconfig-paths": "^6.0.3",
-		"wrangler": "catalog:"
+		"vite-tsconfig-paths": "^6.0.3"
 	}
 }

@@ -1,29 +1,31 @@
 import { relations } from "@fire/db/relations";
+import * as schema from "@fire/db/schema";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
-function _makeDb(connectionString: string) {
+type WithHyperdrive = { DB: { connectionString: string } };
+
+function getConnectionString(): string {
+	try {
+		// @opennextjs/cloudflare exposes bindings via getRequestContext() in Next.js route handlers
+		// eslint-disable-next-line @typescript-eslint/no-require-imports
+		const { getRequestContext } = require("@opennextjs/cloudflare");
+		const { env } = getRequestContext() as { env: WithHyperdrive };
+		if (env.DB?.connectionString) return env.DB.connectionString;
+	} catch {
+		// Not in a Cloudflare request context — local development
+	}
+	return process.env.DATABASE_URL!;
+}
+
+export function createDb() {
 	const pool = new Pool({
-		connectionString,
+		connectionString: getConnectionString(),
 		connectionTimeoutMillis: 15_000,
 		query_timeout: 30_000,
 		statement_timeout: 30_000,
 	});
-	return drizzle({ client: pool, relations });
+	return drizzle({ schema, relations, client: pool });
 }
 
-type DrizzleDb = ReturnType<typeof _makeDb>;
-
-let _db: DrizzleDb | null = null;
-
-export function initDb(connectionString: string): void {
-	if (_db) return;
-	_db = _makeDb(connectionString);
-}
-
-export const db = new Proxy({} as DrizzleDb, {
-	get(_, prop) {
-		if (!_db) throw new Error("DB not initialized — call initDb() first");
-		return (_db as any)[prop];
-	},
-});
+export const db = createDb();

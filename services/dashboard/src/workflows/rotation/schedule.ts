@@ -1,8 +1,8 @@
-import { WorkflowEntrypoint, type WorkflowEvent, type WorkflowStep, type WorkflowStepEvent } from "cloudflare:workers";
 import { getCurrentAssigneeSQL } from "@fire/db/rotation-helpers";
 import type { SlackIntegrationData } from "@fire/db/schema";
 import { integration, user } from "@fire/db/schema";
 import { and, eq, inArray } from "drizzle-orm";
+import { createHook, sleep } from "workflow";
 import { db } from "~/lib/db";
 import { postSlackMessage } from "~/lib/slack";
 
@@ -44,67 +44,97 @@ type NextTransition = {
 	reason: TransitionReason;
 };
 
-// Env is declared globally by `pnpm cf-typegen` (worker-configuration.d.ts)
-export class RotationScheduleWorkflow extends WorkflowEntrypoint<Env, { rotationId: string }> {
-	async run(event: WorkflowEvent<{ rotationId: string }>, step: WorkflowStep) {
-		const { rotationId } = event.payload;
-		let lastEffectiveAssignee: string | null | undefined;
-		let pendingReason: NotificationReason = "schedule_update";
+type TimerResult = {
+	type: "timer";
+	transitionReason: TransitionReason | null;
+};
 
-		while (true) {
-			const now = new Date();
-			const state = await step.do("load-state", () => loadRotationState(rotationId, now));
+type WakeResult = {
+	type: "wake";
+	signal: RotationScheduleWakeSignal;
+};
 
-			if (!state) break;
+export function getRotationScheduleWakeToken(rotationId: string) {
+	return `rotation:${rotationId}:wake`;
+}
 
-			const effectiveAssignee = state.currentAssigneeId;
-			if (lastEffectiveAssignee !== undefined && lastEffectiveAssignee !== effectiveAssignee) {
-				await step.do("log-change", () =>
-					logRotationChange({
-						workflowRotationId: rotationId,
-						rotationId: state.rotationId,
-						clientId: state.clientId,
-						rotationName: state.rotationName,
-						slackChannelId: state.slackChannelId,
-						reason: pendingReason,
-						previousAssigneeId: lastEffectiveAssignee ?? null,
-						nextAssigneeId: effectiveAssignee,
-					}),
-				);
-			}
+export async function rotationScheduleWorkflow(input: { rotationId: string }) {
+	"use workflow";
 
-			lastEffectiveAssignee = effectiveAssignee;
-			pendingReason = "schedule_update";
+	const wakeToken = getRotationScheduleWakeToken(input.rotationId);
+	const wakeHook = createHook<RotationScheduleWakeSignal>({ token: wakeToken });
+	let pendingWake = wakeHook.then(
+		(signal) =>
+			({
+				type: "wake",
+				signal,
+			}) satisfies WakeResult,
+	);
+	let lastEffectiveAssignee: string | null | undefined;
+	let pendingReason: NotificationReason = "schedule_update";
 
-			const nextTransition = getNextTransition(state, now);
-			const nextWakeAt = nextTransition?.at ?? new Date(now.getTime() + ROTATION_SCHEDULE_POLL_INTERVAL_MS);
-			const sleepMs = Math.max(1_000, nextWakeAt.getTime() - Date.now());
+	while (true) {
+		const now = new Date();
+		const state = await loadRotationState(input.rotationId, now);
 
-			// step.waitForEvent resolves with the event on wake, throws on timeout
-			// timeout is in seconds (WorkflowSleepDuration number format)
-			let wakeEvent: WorkflowStepEvent<RotationScheduleWakeSignal> | null = null;
-			try {
-				wakeEvent = await step.waitForEvent<RotationScheduleWakeSignal>("wait-or-wake", {
-					type: "wake",
-					timeout: Math.max(1, Math.ceil(sleepMs / 1000)),
-				});
-			} catch {
-				// timeout expired — treat as timer firing
-			}
-
-			if (wakeEvent !== null) {
-				const wakeSignal = wakeEvent.payload;
-				if (wakeSignal.deleted) break;
-				pendingReason = toWakeReason(wakeSignal.action);
-				continue;
-			}
-
-			pendingReason = nextTransition?.reason ?? "schedule_update";
+		if (!state) {
+			break;
 		}
+
+		const effectiveAssignee = state.currentAssigneeId;
+		if (lastEffectiveAssignee !== undefined && lastEffectiveAssignee !== effectiveAssignee) {
+			await logRotationChange({
+				workflowRotationId: input.rotationId,
+				rotationId: state.rotationId,
+				clientId: state.clientId,
+				rotationName: state.rotationName,
+				slackChannelId: state.slackChannelId,
+				reason: pendingReason,
+				previousAssigneeId: lastEffectiveAssignee,
+				nextAssigneeId: effectiveAssignee,
+			});
+		}
+
+		lastEffectiveAssignee = effectiveAssignee;
+		pendingReason = "schedule_update";
+
+		const nextTransition = getNextTransition(state, now);
+		const nextWakeAt = nextTransition?.at ?? new Date(now.getTime() + ROTATION_SCHEDULE_POLL_INTERVAL_MS);
+		const sleepMs = Math.max(1_000, nextWakeAt.getTime() - Date.now());
+
+		const result: TimerResult | WakeResult = await Promise.race([
+			sleep(sleepMs).then(
+				() =>
+					({
+						type: "timer",
+						transitionReason: nextTransition?.reason ?? null,
+					}) satisfies TimerResult,
+			),
+			pendingWake,
+		]);
+
+		if (result.type === "wake") {
+			pendingWake = wakeHook.then(
+				(signal) =>
+					({
+						type: "wake",
+						signal,
+					}) satisfies WakeResult,
+			);
+			if (result.signal.deleted) {
+				break;
+			}
+			pendingReason = toWakeReason(result.signal.action);
+			continue;
+		}
+
+		pendingReason = result.transitionReason ?? "schedule_update";
 	}
 }
 
 async function loadRotationState(rotationId: string, now: Date): Promise<RotationState | null> {
+	"use step";
+
 	const rotationRow = await db.query.rotation.findFirst({
 		where: {
 			id: rotationId,
@@ -219,6 +249,8 @@ async function logRotationChange(params: {
 	previousAssigneeId: string | null;
 	nextAssigneeId: string | null;
 }): Promise<void> {
+	"use step";
+
 	console.log(
 		[
 			"[rotation-notification]",

@@ -24,6 +24,6 @@
 		"paths": {
 			"~/*": ["./src/*"]
 		},
-		"plugins": []
+		"plugins": [{ "name": "workflow" }]
 	}
 }

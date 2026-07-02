@@ -1,10 +1,11 @@
 import { rotation } from "@fire/db/schema";
 import { createFileRoute } from "@tanstack/solid-router";
-import { env } from "cloudflare:workers";
 import { and, eq, inArray } from "drizzle-orm";
+import { start } from "workflow/api";
 import { auth } from "~/lib/auth/auth";
 import { forbiddenJsonResponse, isAllowed } from "~/lib/auth/authorization";
 import { db } from "~/lib/db";
+import { rotationScheduleWorkflow } from "~/workflows/rotation/schedule";
 
 type StartWorkflowInput = {
 	rotationId?: string;
@@ -119,7 +120,7 @@ async function handleStartRotationWorkflow(request: Request): Promise<Response> 
 
 	for (const rotationId of existingIds) {
 		try {
-			await env.ROTATION_WORKFLOW.create({ id: rotationId, params: { rotationId } });
+			await start(rotationScheduleWorkflow, [{ rotationId }]);
 			startedIds.push(rotationId);
 		} catch (error) {
 			failed.push({

@@ -1,5 +1,5 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { env } from "cloudflare:workers";
+import { getCfEnv } from "~/lib/cf-context";
 
 export function mustGetEnv(name: string): string {
 	const v = process.env[name];
@@ -15,6 +15,8 @@ export async function sha256(str: string): Promise<string> {
 	return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+type IncidentdBinding = { fetch: (req: Request) => Promise<Response> };
+
 export async function incidentdFetch(
 	path: string,
 	authContext: { clientId: string; userId: string },
@@ -26,8 +28,9 @@ export async function incidentdFetch(
 		"X-User-Id": authContext.userId,
 	};
 
-	if (env.INCIDENTD) {
-		return env.INCIDENTD.fetch(
+	const cfEnv = getCfEnv();
+	if (cfEnv?.INCIDENTD) {
+		return (cfEnv.INCIDENTD as IncidentdBinding).fetch(
 			new Request("https://incidentd" + path, { ...init, headers }),
 		);
 	}

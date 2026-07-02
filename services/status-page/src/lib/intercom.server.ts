@@ -114,7 +114,7 @@ function isCustomerFacingLocation(payload: IntercomCanvasRequest): boolean {
 }
 
 function buildFireWorkspaceIntegrationsUrl(): string | null {
-	const appUrl = process.env.APP_URL?.trim();
+	const appUrl = process.env.VITE_APP_URL?.trim();
 	if (!appUrl) {
 		return null;
 	}
@@ -132,7 +132,7 @@ function buildStatusPageBaseUrl(page: { slug: string; customDomain: string | nul
 		return `https://${customDomain}`;
 	}
 
-	const statusDomain = normalizeDomain(process.env.STATUS_PAGE_DOMAIN ?? null);
+	const statusDomain = normalizeDomain(process.env.VITE_STATUS_PAGE_DOMAIN ?? null);
 	if (statusDomain) {
 		return `https://${statusDomain}/${page.slug}`;
 	}
@@ -380,7 +380,7 @@ export async function buildIntercomLiveCanvasInitializeResponse(rawBody: string)
 		return { status: 404 };
 	}
 
-	const statusDomain = normalizeDomain(process.env.STATUS_PAGE_DOMAIN ?? null);
+	const statusDomain = normalizeDomain(process.env.VITE_STATUS_PAGE_DOMAIN ?? null);
 	if (!statusDomain) {
 		return { status: 404 };
 	}
