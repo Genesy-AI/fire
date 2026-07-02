@@ -6,6 +6,7 @@
 		"dev": "wrangler dev",
 		"build": "wrangler deploy --dry-run",
 		"deploy": "wrangler deploy",
+		"deploy:preview": "wrangler versions upload",
 		"type-check": "tsc --noEmit",
 		"lint": "echo 'Lint runs from root'",
 		"clean": "rm -rf node_modules"
