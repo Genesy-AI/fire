@@ -7,6 +7,7 @@
 	"vars": {
 		"BETTER_AUTH_URL": "https://firedash.enginy.ai",
 		"CLIENT_ID": "genesy",
+		"IMAGES_PUBLIC_URL": "https://pub-c58f4e5fcd074b55b129a9bbfd1a5ef5.r2.dev",
 		"SLACK_BOT_SCOPES": "app_mentions:read,channels:history,channels:join,channels:manage,channels:read,chat:write,emoji:read,groups:history,groups:read,pins:write,reactions:write,users:read,users:read.email",
 		"VITE_APP_URL": "https://firedash.enginy.ai"
 	},
