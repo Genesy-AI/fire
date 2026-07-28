@@ -26,7 +26,7 @@
 		"@tanstack/solid-router": "1.136.17",
 		"@tanstack/solid-router-devtools": "1.136.17",
 		"@tanstack/solid-start": "1.136.17",
-		"better-auth": "^1.4.9",
+		"better-auth": "^1.6.22",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"cmdk-solid": "^1.1.2",
