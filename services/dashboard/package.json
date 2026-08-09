@@ -33,7 +33,7 @@
 		"date-fns": "^4.1.0",
 		"drizzle-orm": "catalog:",
 		"lucide-solid": "^0.562.0",
-		"nanoid": "^5.1.6",
+		"nanoid": "^5.1.16",
 		"pg": "catalog:",
 		"solid-js": "^1.9.10",
 		"tailwind-merge": "^3.4.0"
